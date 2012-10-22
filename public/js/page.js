@@ -20,7 +20,7 @@ function init(){
     $(window).resize(player.resize.bind(player));
     
     
-    setInterval(player.refreshProgress, 200);
+    setInterval(player.refreshProgress.bind(player), 200);
     
   });
 }

@@ -45,7 +45,6 @@ AcademyReadyPlayer.prototype.resize = function() {
   });
   
   this.rebucket(Math.floor(w / PANEL_WIDTH));
-  console.log(w, PANEL_WIDTH);
   this.refreshProgress();
 };
 
@@ -77,8 +76,16 @@ AcademyReadyPlayer.prototype.rebucket = function(count) {
 };
 
 AcademyReadyPlayer.prototype.refreshProgress = function(){
-  if (yt.getCurrentTime && yt.getDuration) {
-    var percentProgress = (yt.getCurrentTime() / yt.getDuration()) * 100;
-    progressMeter.css('right', (99.5 - percentProgress) + '%');
+    
+  var currentTime = yt.getCurrentTime();
+  var duration = yt.getDuration();
+
+  var percentProgress = (currentTime / duration) * 100;
+  progressMeter.css('right', (99.5 - percentProgress) + '%');
+  
+  var bucketIndex = Math.floor(percentProgress * this.buckets.length / 100);
+  $('.b-panel-selected').removeClass('b-panel-selected');
+  if (bucketIndex < this.buckets.length) {
+    this.buckets[bucketIndex].addClass('b-panel-selected');
   }
 };
