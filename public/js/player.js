@@ -52,9 +52,20 @@ AcademyReadyPlayer.prototype.addItem = function(item) {
   this.items.push(item);
   var bucketSize = yt.getDuration() / this.buckets.length;
   var bucketIndex = Math.floor(item.time / bucketSize);
-  var q = $('<div></div>').addClass('b-panel-q').text(item.title);
+  var q = $('<div></div>').addClass('b-panel-q').data('item', item).text(item.title).click(this.setItem);
   this.buckets[bucketIndex].append(q);
 };
+
+AcademyReadyPlayer.prototype.setItem = function() {
+  $('.b-panel-q-selected').removeClass('b-panel-q-selected');
+  $(this).addClass('b-panel-q-selected');
+  var leftContent = $('#l-content');
+  leftContent[0].innerHTML = '';
+  var item = $(this).data('item');
+  var head = $('<h1></h1>').text(item.title);
+  var body = $('<div></div>').addClass('l-body').text(item.body);
+  leftContent.append([head, body]);
+}
 
 AcademyReadyPlayer.prototype.rebucket = function(count) {
   bottom[0].innerHTML = '';
@@ -69,7 +80,7 @@ AcademyReadyPlayer.prototype.rebucket = function(count) {
   for (var i = 0, ii = this.items.length; i < ii; i++) {
     var item = this.items[i];
     var bucketIndex = Math.floor(item.time / bucketSize);
-    var q = $('<div></div>').addClass('b-panel-q').text(item.title);
+    var q = $('<div></div>').addClass('b-panel-q').data('item', item).text(item.title).click(this.setItem);
     this.buckets[bucketIndex].append(q);
   }
   

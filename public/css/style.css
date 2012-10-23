@@ -6,9 +6,15 @@ html {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
+h1 {
+  color: #fff;
+  font-size: 20px;
+  font-weight: normal;
+}
+
 #left {
   position: fixed;
-  background: #555;
+  background: #333;
   left: 0;
   z-index: 3;
 }
@@ -62,18 +68,15 @@ html {
 }
 
 .b-panel-selected {
-  background-color: #222;
-  border-top: 5px solid #222;
-  border-bottom: 5px solid #222;
+  border-bottom: 5px solid #AA0000;
+  background-color: #444;
+  border-top: 5px solid #444;
 }
 
-.b-panel-selected .b-panel-q {
-  border-bottom: 1px solid #111;
-}
-
-.b-panel-selected .b-panel-q:hover {
+.b-panel-q-selected, .b-panel-q:active {
   background-color: #111;
 }
+
 
 #progress {
   height: 5px;
@@ -90,4 +93,13 @@ html {
   width: 100.5%;
   height: 5px;
   background: url(/images/progress.png) repeat-x;
+}
+
+#l-content {
+  padding: 25px;
+}
+
+.l-body {
+  color: #ccc;
+  font-size: 12px;
 }
