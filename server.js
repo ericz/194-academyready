@@ -4,7 +4,7 @@ var app = express();
 var mongo = require('mongoskin');
 var ObjectID = require('mongoskin').ObjectID;
 var db = mongo.db('localhost:27017/194?auto_reconnect');
-var Questions = db.collection('questions');
+var Questions = db.collection('Questions');
 var Comments = db.collection('Comments')
 
 app.use(express.static(__dirname + '/public'));
