@@ -49,7 +49,6 @@ app.post('/addComment', function(req, res){
 });
 
 app.get('/getQuestionById/:questionId', function(req, res){
-
 	var questionId = req.params.questionId;
 	Questions.findById(questionId, function(err, result){
 		if(err) throw err;
@@ -67,10 +66,10 @@ app.get('/getCommentById/:commentId', function(req, res){
 	});
 });
 
-app.get('/getQuestionByVideoIdAndVideoTime', function(req, res){
-	var videoId = req.query.videoId;
-	var videoTime = parseInt(req.query.videoTime);
-	var query = {'videoId': videoId , 'videoTime': videoTime};
+app.get('/getQuestionByVideoId/:videoId', function(req, res){
+	var videoId = req.params.videoId;
+	
+	var query = {'videoId': videoId};
 	console.log(query);
 	Questions.find(query).toArray(function(err, results){
 		if(err) throw err;
