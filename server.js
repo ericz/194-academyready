@@ -13,13 +13,13 @@ app.use(express.bodyParser());
 
 app.post('/addQuestion', function(req, res){
 	
-
+  var questionTitle = req.body.questionTitle;
 	var questionText = req.body.questionText; //the actual text of the question
 	var videoId = req.body.videoId; //foreign key to the video associated with the question
 	var videoTime = parseInt(req.body.videoTime); //second of the video that the question relates to
 
 
-	var toInsert = {'videoId': videoId, 'questionText': questionText, 'videoTime':videoTime, 'comments': [], 'upvotes': 0};
+	var toInsert = {'videoId': videoId, 'questionTitle': questionTitle, 'questionText': questionText, 'videoTime':videoTime, 'comments': [], 'upvotes': 0};
 
 	Questions.insert(toInsert, function(err, data){
 		if (err) throw(err);
@@ -68,7 +68,7 @@ app.get('/getCommentById/:commentId', function(req, res){
 
 app.get('/getQuestionsByVideoId/:videoId', function(req, res){
 	var videoId = req.params.videoId;
-	
+  
 	var query = {'videoId': videoId};
 	console.log(query);
 	Questions.find(query).toArray(function(err, results){
