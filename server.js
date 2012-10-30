@@ -66,7 +66,7 @@ app.get('/getCommentById/:commentId', function(req, res){
 	});
 });
 
-app.get('/getQuestionByVideoId/:videoId', function(req, res){
+app.get('/getQuestionsByVideoId/:videoId', function(req, res){
 	var videoId = req.params.videoId;
 	
 	var query = {'videoId': videoId};
@@ -74,8 +74,36 @@ app.get('/getQuestionByVideoId/:videoId', function(req, res){
 	Questions.find(query).toArray(function(err, results){
 		if(err) throw err;
 		console.log(results);
+		for(var i = 0; i < results.length; i = i + 1){
+			var result = results[i];
+			result.date = getDateFromObjectID(result['_id']);
+		}
 		res.send({'status': 'ok', 'data': results});
 	});
 });
+
+app.get('/getCommentsByQuestionId/:questionId', function(req, res){
+	var questionId = req.params.questionId;
+	var query = {'questionId' : questionId};
+	Comments.find(query).toArray(function(err, results){
+		if(err) throw err;
+		console.log(results);
+		for(var i = 0; i < results.length; i = i + 1){
+			var result = results[i];
+			result.date = getDateFromObjectID(result['_id']);
+		}
+		res.send({'status': 'ok', 'data': results});	
+	});
+
+});
+
+var getDateFromObjectID = function(objectId){
+	var objectIdString = objectId.toString();
+	var dateHex = objectIdString.substring(0,8);
+	var seconds = parseInt(dateHex, 16);
+	var ms = seconds * 1000;
+	var date = new Date(ms);
+	return date; 
+}
 
 app.listen(80);
