@@ -5,7 +5,11 @@ var mongo = require('mongoskin');
 var ObjectID = require('mongoskin').ObjectID;
 var db = mongo.db('localhost:27017/194?auto_reconnect');
 var Questions = db.collection('Questions');
-var Comments = db.collection('Comments')
+var Comments = db.collection('Comments');
+var http = require('http');
+var server = http.createServer(app);
+var sio = require('socket.io');
+var io = sio.listen(server);
 
 app.use(express.static(__dirname + '/public'));
 app.use(express.bodyParser());
@@ -25,6 +29,7 @@ app.post('/addQuestion', function(req, res){
 	Questions.insert(toInsert, function(err, data){
 		if (err) throw(err);
 		var result = data[0];
+		io.sockets.emit('addedQuestion', result);
 		res.send({'status': 'ok', 'questionId': result['_id']}); //return the id of the question
 	});
 });
@@ -38,16 +43,18 @@ app.post('/addComment', function(req, res){
 
 	Comments.insert(toInsert, function(err, data){
 		if(err) throw(err);
-		var result = data[0];
+		var commentResult = data[0];
 		var commentId = result['_id'];
 		var toUpdate = {'$push':{comments: commentId}};
 
 		Questions.updateById(questionId, toUpdate, function(err, result){
 			if (err) throw(err);
+			io.sockets.emit('addedComment', commentResult);
 			res.send({'status': 'ok', 'commentId': commentId }); //return the id of the comment
 		});
 	});
 });
+
 
 app.get('/getQuestionById/:questionId', function(req, res){
 	var questionId = req.params.questionId;
@@ -107,4 +114,4 @@ var getDateFromObjectID = function(objectId){
 	return date; 
 }
 
-app.listen(80);
+server.listen(80);
