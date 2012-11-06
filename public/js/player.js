@@ -1,12 +1,35 @@
 function AcademyReadyPlayer () {
-
   this.buckets = [];
   
   this.items = []
   
   this.resize();
   
-
+  $('#add').click(function(){
+    $(this).hide();
+    $('#cancel').css('display', 'inline-block');
+    $('#l-add').show();
+    $('#l-content').hide();
+  });
+  
+  $('#cancel').click(function(){
+    $(this).hide();
+    $('#add').css('display', 'inline-block');
+    $('#l-add').hide();
+    $('#l-content').show();
+    $('#add-title').val('');
+    $('#add-question').val('');
+  });
+  
+  $('#add-submit').click(function(){
+    $.post('/addQuestion', {
+      questionTitle: $('#add-title').val(),
+      questionText: $('#add-question').val(),
+      videoId: VIDEO_ID,
+      videoTime: parseInt(time.val())
+    });
+    $('#cancel').click();
+  });
 }
 
 AcademyReadyPlayer.prototype.resize = function() {
@@ -71,6 +94,23 @@ AcademyReadyPlayer.prototype.setItem = function() {
   
   var comments = $('<div></div>').addClass('l-comments-wrap');
  
+  var input = $('<textarea></textarea>').prop('id', 'add-comment').addClass('text-input').prop('rows', 2).prop('placeholder', 'Add to the discussion').keyup(function(){
+    if($(this).val().length > 0) {
+      $('#submit-comment').css('display', 'inline-block');
+    } else {
+      $('#submit-comment').hide();
+    }
+  });
+  var submit = $('<div></div>').addClass('btn').prop('id', 'submit-comment').text('Add comment').click(function(){
+    $.post('/addComment', {
+      questionId: item.id,
+      commentText: $('#add-comment').val()
+    });
+    $('#add-comment').val('');
+    $(this).hide();
+  });
+  var submitwrap = $('<div></div>').prop('align', 'right').append(submit);
+ 
   function setComments (){
     var commenthead = $('<div></div>').addClass('l-commenthead').text(item.comments.length + ' comments');
     comments.append(commenthead);
@@ -84,7 +124,6 @@ AcademyReadyPlayer.prototype.setItem = function() {
     setComments();
   } else {
     $.getJSON('/getCommentsByQuestionId/' + item.id, function(res) {
-      console.log(1);
       item.comments = [];
       for(var i = 0; i < res.data.length; i++) {
         var d = res.data[i];
@@ -97,11 +136,7 @@ AcademyReadyPlayer.prototype.setItem = function() {
     });
   }
 
-  leftContent.append([head, details, body, comments]);
-};
-
-AcademyReadyPlayer.prototype.setComments = function() {
-  
+  leftContent.append([head, details, body, comments, input, submitwrap]);
 };
 
 AcademyReadyPlayer.prototype.rebucket = function(count) {
@@ -120,7 +155,6 @@ AcademyReadyPlayer.prototype.rebucket = function(count) {
     var q = $('<div></div>').addClass('b-panel-q').data('item', item).text(item.title).click(this.setItem);
     this.buckets[bucketIndex].append(q);
   }
-  
 };
 
 
@@ -138,4 +172,15 @@ AcademyReadyPlayer.prototype.refreshProgress = function(){
   if (bucketIndex < this.buckets.length) {
     this.buckets[bucketIndex].addClass('b-panel-selected');
   }
+  
+  var seconds = Math.floor(currentTime % 60);
+  var minutes = Math.floor(currentTime / 60).toString();
+  
+  timeDisplay.text(minutes + ':' + pad2(seconds));
+  time.val(currentTime);
 };
+
+function pad2(number) {
+  return (number < 10 ? '0' : '') + number
+}
+

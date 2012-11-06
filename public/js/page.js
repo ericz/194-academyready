@@ -3,7 +3,7 @@ var BOTTOM_HEIGHT = 165;
 var PANEL_WIDTH = 200;
 var RIGHT_PANEL_PADDING = 80;
 
-var left, right, bottom, progressMeter;
+var left, right, bottom, progressMeter, timeDisplay, time;
 var split = .35;
 
 
@@ -17,13 +17,14 @@ function init(){
     right = $('#right');
     bottom = $('#bottom');
     progressMeter = $('#progress-meter');
+    time = $('#add-time');
+    timeDisplay = $('#add-time-display');
     player = new AcademyReadyPlayer();
     
     $(window).resize(player.resize.bind(player));
     
     
     setInterval(player.refreshProgress.bind(player), 200);
-    
     
     // Load questions
     loadQuestions();

@@ -97,9 +97,13 @@ h1 {
   background: url(/images/progress.png) repeat-x;
 }
 
-#l-content {
-  padding: 25px;
+#l-content, #l-add {
+  padding: 25px 25px 25px 25px;
   word-wrap: break-word;
+}
+
+#l-add {
+  display: none;
 }
 
 .l-body {
@@ -123,9 +127,95 @@ h1 {
 }
 
 .l-comment {
-  background-color: #232323;
+  background-color: #444;
   margin-top: 2px;
   padding: 5px;
   font-size: 12px;
   color: #ccc;
 }
+
+#submit-comment  {
+  display: none;
+}
+
+.btn {
+  background-color: hsl(0, 69%, 22%);
+  background-repeat: repeat-x;
+  background-image: -khtml-gradient(linear, left top, left bottom, from(hsl(0, 69%, 42%)), to(hsl(0, 69%, 22%)));
+  background-image: -moz-linear-gradient(top, hsl(0, 69%, 42%), hsl(0, 69%, 22%));
+  background-image: -ms-linear-gradient(top, hsl(0, 69%, 42%), hsl(0, 69%, 22%));
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, hsl(0, 69%, 42%)), color-stop(100%, hsl(0, 69%, 22%)));
+  background-image: -webkit-linear-gradient(top, hsl(0, 69%, 42%), hsl(0, 69%, 22%));
+  background-image: -o-linear-gradient(top, hsl(0, 69%, 42%), hsl(0, 69%, 22%));
+  background-image: linear-gradient(hsl(0, 69%, 42%), hsl(0, 69%, 22%));
+  color: #fff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.33);
+  padding: 5px 14px 6px;
+  color: #fff;
+  font-size: 13px;
+  line-height: normal;
+  border: 1px solid #333;
+  border-top-color: #333;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+  -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+  -webkit-transition: 0.1s linear all;
+  -moz-transition: 0.1s linear all;
+  transition: 0.1s linear all;
+  margin: 5px;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-position: 0 -15px;
+  border: 1px solid #222;
+}
+.btn:active {
+  -webkit-box-shadow: inset 0 3px 7px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+  -moz-box-shadow: inset 0 3px 7px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 3px 7px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.grey {
+  background-color: hsl(70, 11%, 23%);
+  background-repeat: repeat-x;
+  background-image: -khtml-gradient(linear, left top, left bottom, from(hsl(70, 11%, 45%)), to(hsl(70, 11%, 23%)));
+  background-image: -moz-linear-gradient(top, hsl(70, 11%, 45%), hsl(70, 11%, 23%));
+  background-image: -ms-linear-gradient(top, hsl(70, 11%, 45%), hsl(70, 11%, 23%));
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, hsl(70, 11%, 45%)), color-stop(100%, hsl(70, 11%, 23%)));
+  background-image: -webkit-linear-gradient(top, hsl(70, 11%, 45%), hsl(70, 11%, 23%));
+  background-image: -o-linear-gradient(top, hsl(70, 11%, 45%), hsl(70, 11%, 23%));
+  background-image: linear-gradient(hsl(70, 11%, 45%), hsl(70, 11%, 23%));
+  border-color: hsl(70, 11%, 23%) hsl(70, 11%, 23%) hsl(70, 11%, 17.5%);
+}
+
+#toolbar {
+  padding: 10px 20px;
+  text-align: right;
+  background-color: #222;
+}
+
+#cancel {
+  display: none;
+}
+
+.text-input {
+  width: 100%;
+  border: 0;
+  padding: 10px;
+  border-radius: 2px;
+  margin: 7px 0;
+  font-size: 14px;
+  color: #ccc;
+  background-color: #222;
+}
+
+#add-time-display {
+  font-weight: bold;
+  color: #fff;
+}
+
