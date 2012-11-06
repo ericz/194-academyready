@@ -1,6 +1,13 @@
 var socket = io.connect('/');
 socket.on('addedComment', function (data) {
   console.log(data);
+  var q = $('#'+data.questionId);
+  var item = q.data('item');
+  item.comments.push({body:data.commentText});
+  if(q.hasClass('b-panel-q-selected')) {
+    var comment = $('<div></div>').addClass('l-comment').text(data.commentText);
+    $('.l-comments-wrap').append(comment);
+  }
 });
 socket.on('addedQuestion', function (data) {
   console.log(data);
@@ -9,10 +16,10 @@ socket.on('addedQuestion', function (data) {
     title: data.questionTitle,
     body: data.questionText,
     time: data.videoTime,
-    created: ((new Date()).getTime() - Math.round(Math.random() * 100000000)),
-    userName: 'Eric Z.'
+    created: data.date,
+    userName: 'Anonymous'
   };
-    
+  player.addItem(item);
 });
 
 

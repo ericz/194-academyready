@@ -75,7 +75,7 @@ AcademyReadyPlayer.prototype.addItem = function(item) {
   this.items.push(item);
   var bucketSize = yt.getDuration() / this.buckets.length;
   var bucketIndex = Math.floor(item.time / bucketSize);
-  var q = $('<div></div>').addClass('b-panel-q').data('item', item).text(item.title).click(this.setItem);
+  var q = $('<div></div>').addClass('b-panel-q').data('item', item).prop('id', item.id).text(item.title).click(this.setItem);
   this.buckets[bucketIndex].append(q);
 };
 
