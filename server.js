@@ -51,7 +51,7 @@ app.post('/addComment', function(req, res){
 
 		Questions.updateById(questionId, toUpdate, function(err, result){
 			if (err) throw(err);
-			result['date'] = getDateFromObjectID(result['_id']);
+			commentResult['date'] = getDateFromObjectID(result['_id']);
       		commentResult['_id'] = commentResult['_id'].toString();
 			io.sockets.emit('addedComment', commentResult);
 			res.send({'status': 'ok', 'commentId': commentId }); //return the id of the comment
