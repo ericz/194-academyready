@@ -1,29 +1,3 @@
-var socket = io.connect('/');
-socket.on('addedComment', function (data) {
-  console.log(data);
-  var q = $('#'+data.questionId);
-  var item = q.data('item');
-  item.comments.push({body:data.commentText});
-  if(q.hasClass('b-panel-q-selected')) {
-    var comment = $('<div></div>').addClass('l-comment').text(data.commentText);
-    $('.l-comments-wrap').append(comment);
-  }
-});
-socket.on('addedQuestion', function (data) {
-  console.log(data);
-  var item = {
-    id: data._id,
-    title: data.questionTitle,
-    body: data.questionText,
-    time: data.videoTime,
-    created: data.date,
-    userName: 'Anonymous'
-  };
-  player.addItem(item);
-});
-
-
-
 var YTASPECT = 16/9;
 var BOTTOM_HEIGHT = 165;
 var PANEL_WIDTH = 200;
@@ -36,6 +10,9 @@ var split = .35;
 var VIDEO_ID = '5';
 
 var player;
+
+
+
 
 function init(){
   $(function(){
@@ -56,6 +33,30 @@ function init(){
     loadQuestions();
     
   });
+  
+  var socket = io.connect('/');
+  socket.on('addedComment', function (data) {
+    var q = $('#'+data.questionId);
+    var item = q.data('item');
+    item.comments.push({body:data.commentText});
+    if(q.hasClass('b-panel-q-selected')) {
+      var comment = $('<div></div>').addClass('l-comment').text(data.commentText);
+      $('.l-comments-wrap').append(comment);
+    }
+  });
+  socket.on('addedQuestion', function (data) {
+    var item = {
+      id: data._id,
+      title: data.questionTitle,
+      body: data.questionText,
+      time: data.videoTime,
+      created: data.date,
+      userName: 'Anonymous'
+    };
+    player.addItem(item);
+  });
+
+  
 }
 
 
