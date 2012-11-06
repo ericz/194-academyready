@@ -46,7 +46,7 @@ app.post('/addComment', function(req, res){
 	Comments.insert(toInsert, function(err, data){
 		if(err) throw(err);
 		var commentResult = data[0];
-		var commentId = result['_id'];
+		var commentId = commentResult['_id'];
 		var toUpdate = {'$push':{comments: commentId}};
 
 		Questions.updateById(questionId, toUpdate, function(err, result){
