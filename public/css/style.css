@@ -10,6 +10,7 @@ h1 {
   color: #fff;
   font-size: 20px;
   font-weight: normal;
+  margin-bottom: 0;
 }
 
 #left {
@@ -17,6 +18,7 @@ h1 {
   background: #333;
   left: 0;
   z-index: 3;
+  overflow-y: scroll;
 }
 
 #right {
@@ -97,9 +99,33 @@ h1 {
 
 #l-content {
   padding: 25px;
+  word-wrap: break-word;
 }
 
 .l-body {
   color: #ccc;
   font-size: 12px;
+}
+
+.l-created, .l-author {
+  color: #ccc;
+}
+
+.l-details {
+  font-size: 10px;
+  margin-bottom: 15px;
+}
+
+.l-commenthead {
+  color: #fff;
+  font-size: 16px;
+  margin-top: 15px;
+}
+
+.l-comment {
+  background-color: #232323;
+  margin-top: 2px;
+  padding: 5px;
+  font-size: 12px;
+  color: #ccc;
 }

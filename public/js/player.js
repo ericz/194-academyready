@@ -63,9 +63,46 @@ AcademyReadyPlayer.prototype.setItem = function() {
   leftContent[0].innerHTML = '';
   var item = $(this).data('item');
   var head = $('<h1></h1>').text(item.title);
+  var details = $('<div></div>').addClass('l-details');
+  var author = $('<span></span>').addClass('l-created').text('Created by ' + item.userName + ' ');
+  var date = $('<span></span>').addClass('l-created').text($.timeago(item.created));
+  details.append([author, date]);
   var body = $('<div></div>').addClass('l-body').text(item.body);
-  leftContent.append([head, body]);
-}
+  
+  var comments = $('<div></div>').addClass('l-comments-wrap');
+ 
+  function setComments (){
+    var commenthead = $('<div></div>').addClass('l-commenthead').text(item.comments.length + ' comments');
+    comments.append(commenthead);
+    for (var i = 0; i < item.comments.length; i++) {
+      var comment = $('<div></div>').addClass('l-comment').text(item.comments[i].body);
+      comments.append(comment);
+    }
+  }
+ 
+  if (item.comments) {
+    setComments();
+  } else {
+    $.getJSON('/getCommentsByQuestionId/' + item.id, function(res) {
+      console.log(1);
+      item.comments = [];
+      for(var i = 0; i < res.data.length; i++) {
+        var d = res.data[i];
+        var comment = {
+          body: d.commentText
+        };
+        item.comments.push(comment);
+      }
+      setComments();
+    });
+  }
+
+  leftContent.append([head, details, body, comments]);
+};
+
+AcademyReadyPlayer.prototype.setComments = function() {
+  
+};
 
 AcademyReadyPlayer.prototype.rebucket = function(count) {
   bottom[0].innerHTML = '';
@@ -85,6 +122,8 @@ AcademyReadyPlayer.prototype.rebucket = function(count) {
   }
   
 };
+
+
 
 AcademyReadyPlayer.prototype.refreshProgress = function(){
     
