@@ -29,6 +29,7 @@ app.post('/addQuestion', function(req, res){
 	Questions.insert(toInsert, function(err, data){
 		if (err) throw(err);
 		var result = data[0];
+    result['_id'] = result['_id'].toString();
 		io.sockets.emit('addedQuestion', result);
 		res.send({'status': 'ok', 'questionId': result['_id']}); //return the id of the question
 	});
@@ -49,6 +50,7 @@ app.post('/addComment', function(req, res){
 
 		Questions.updateById(questionId, toUpdate, function(err, result){
 			if (err) throw(err);
+      commentResult['_id'] = commentResult['_id'].toString();
 			io.sockets.emit('addedComment', commentResult);
 			res.send({'status': 'ok', 'commentId': commentId }); //return the id of the comment
 		});

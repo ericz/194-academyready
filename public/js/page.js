@@ -1,3 +1,22 @@
+var socket = io.connect('/');
+socket.on('addedComment', function (data) {
+  console.log(data);
+});
+socket.on('addedQuestion', function (data) {
+  console.log(data);
+  var item = {
+    id: data._id,
+    title: data.questionTitle,
+    body: data.questionText,
+    time: data.videoTime,
+    created: ((new Date()).getTime() - Math.round(Math.random() * 100000000)),
+    userName: 'Eric Z.'
+  };
+    
+});
+
+
+
 var YTASPECT = 16/9;
 var BOTTOM_HEIGHT = 165;
 var PANEL_WIDTH = 200;
