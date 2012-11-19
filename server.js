@@ -14,6 +14,16 @@ var io = sio.listen(server);
 app.use(express.static(__dirname + '/public'));
 app.use(express.bodyParser());
 
+io.sockets.on('connection', function(socket){
+	console.log('connected');
+	socket.emit('connected');
+	socket.on('change_video', function(data){
+		if (data.currentVideo){
+			socket.leave(data.currentVideo)
+		}
+		socket.join(data.videoId);
+	});
+});
 
 app.post('/addQuestion', function(req, res){
 	
@@ -31,7 +41,7 @@ app.post('/addQuestion', function(req, res){
 		var result = data[0];
 		result['date'] = getDateFromObjectID(result['_id']);
     	result['_id'] = result['_id'].toString();
-		io.sockets.emit('addedQuestion', result);
+		io.sockets.in(videoId).emit('addedQuestion', result);
 		res.send({'status': 'ok', 'questionId': result['_id']}); //return the id of the question
 	});
 });
@@ -40,6 +50,7 @@ app.post('/addComment', function(req, res){
 	
 	var questionId = req.body.questionId; //the related question
 	var commentText = req.body.commentText; //the actual text of the comment
+	console.log(questionId)
 
 	var toInsert = {'questionId': questionId, 'commentText': commentText, 'children': [], 'upvotes': 0};
 
@@ -49,11 +60,12 @@ app.post('/addComment', function(req, res){
 		var commentId = commentResult['_id'];
 		var toUpdate = {'$push':{comments: commentId}};
 
-		Questions.updateById(questionId, toUpdate, function(err, result){
+		Questions.updateById(questionId, toUpdate, {'safe': true}, function(err, result){
 			if (err) throw(err);
 			commentResult['date'] = getDateFromObjectID(commentResult['_id']);
       		commentResult['_id'] = commentResult['_id'].toString();
-			io.sockets.emit('addedComment', commentResult);
+      		var room = result.videoId
+			io.sockets.in(room).emit('addedComment', commentResult);
 			res.send({'status': 'ok', 'commentId': commentId }); //return the id of the comment
 		});
 	});
