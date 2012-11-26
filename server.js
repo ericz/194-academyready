@@ -3,7 +3,7 @@ var express = require('express');
 var app = express();
 var mongo = require('mongoskin');
 var ObjectID = require('mongoskin').ObjectID;
-var db = mongo.db('localhost:27017/194?auto_reconnect');
+var db = mongo.db('localhost:27017/194?auto_reconnect', {safe: true});
 var Questions = db.collection('Questions');
 var Comments = db.collection('Comments');
 var http = require('http');
@@ -11,11 +11,15 @@ var server = http.createServer(app);
 var sio = require('socket.io');
 var io = sio.listen(server);
 
+
+app.set('view engine', 'ejs');
+app.set('views', __dirname + '/views');
+
 app.use(express.static(__dirname + '/public'));
 app.use(express.bodyParser());
 
 io.sockets.on('connection', function(socket){
-	console.log('connected');
+	//console.log('connected');
 	socket.emit('connected');
 	socket.on('change_video', function(data){
 		if (data.currentVideo){
@@ -24,6 +28,8 @@ io.sockets.on('connection', function(socket){
 		socket.join(data.videoId);
 	});
 });
+
+io.set('log level', 1);
 
 app.post('/addQuestion', function(req, res){
 	
@@ -34,7 +40,7 @@ app.post('/addQuestion', function(req, res){
 	var title = req.body.questionTitle;
 
 
-	var toInsert = {'videoId': videoId, 'questionTitle': title, 'questionText': questionText, 'videoTime':videoTime, 'comments': [], 'upvotes': 0};
+	var toInsert = {'videoId': videoId, 'questionTitle': title, 'questionText': questionText, 'videoTime':videoTime, 'upvotes': 0};
 
 	Questions.insert(toInsert, function(err, data){
 		if (err) throw(err);
@@ -50,7 +56,7 @@ app.post('/addComment', function(req, res){
 	
 	var questionId = req.body.questionId; //the related question
 	var commentText = req.body.commentText; //the actual text of the comment
-	console.log(questionId)
+	//console.log(questionId)
 
 	var toInsert = {'questionId': questionId, 'commentText': commentText, 'children': [], 'upvotes': 0};
 
@@ -58,16 +64,11 @@ app.post('/addComment', function(req, res){
 		if(err) throw(err);
 		var commentResult = data[0];
 		var commentId = commentResult['_id'];
-		var toUpdate = {'$push':{comments: commentId}};
-
-		Questions.updateById(questionId, toUpdate, {'safe': true}, function(err, result){
-			if (err) throw(err);
-			commentResult['date'] = getDateFromObjectID(commentResult['_id']);
-      		commentResult['_id'] = commentResult['_id'].toString();
-      		var room = result.videoId
-			io.sockets.in(room).emit('addedComment', commentResult);
-			res.send({'status': 'ok', 'commentId': commentId }); //return the id of the comment
-		});
+		commentResult['date'] = getDateFromObjectID(commentResult['_id']);
+    commentResult['_id'] = commentResult['_id'].toString();
+    
+    io.sockets.in(req.body.videoId).emit('addedComment', commentResult);
+    res.send({'status': 'ok', 'commentId': commentId }); //return the id of the comment
 	});
 });
 
@@ -76,7 +77,7 @@ app.get('/getQuestionById/:questionId', function(req, res){
 	var questionId = req.params.questionId;
 	Questions.findById(questionId, function(err, result){
 		if(err) throw err;
-		console.log(result);
+		//console.log(result);
 		res.send({'status': 'ok', 'data': result});
 	});
 
@@ -94,10 +95,10 @@ app.get('/getQuestionsByVideoId/:videoId', function(req, res){
 	var videoId = req.params.videoId;
   
 	var query = {'videoId': videoId};
-	console.log(query);
+	//console.log(query);
 	Questions.find(query).toArray(function(err, results){
 		if(err) throw err;
-		console.log(results);
+		//console.log(results);
 		for(var i = 0; i < results.length; i = i + 1){
 			var result = results[i];
 			result.date = getDateFromObjectID(result['_id']);
@@ -111,7 +112,7 @@ app.get('/getCommentsByQuestionId/:questionId', function(req, res){
 	var query = {'questionId' : questionId};
 	Comments.find(query).toArray(function(err, results){
 		if(err) throw err;
-		console.log(results);
+		//console.log(results);
 		for(var i = 0; i < results.length; i = i + 1){
 			var result = results[i];
 			result.date = getDateFromObjectID(result['_id']);
@@ -119,6 +120,10 @@ app.get('/getCommentsByQuestionId/:questionId', function(req, res){
 		res.send({'status': 'ok', 'data': results});	
 	});
 
+});
+
+app.get('/video/:id', function(req, res) {
+  res.render('video', {id: req.params.id});
 });
 
 var getDateFromObjectID = function(objectId){

@@ -104,7 +104,8 @@ AcademyReadyPlayer.prototype.setItem = function() {
   var submit = $('<div></div>').addClass('btn').prop('id', 'submit-comment').text('Add comment').click(function(){
     $.post('/addComment', {
       questionId: item.id,
-      commentText: $('#add-comment').val()
+      commentText: $('#add-comment').val(),
+      videoId: VIDEO_ID
     });
     $('#add-comment').val('');
     $(this).hide();

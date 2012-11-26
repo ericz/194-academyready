@@ -6,9 +6,6 @@ var RIGHT_PANEL_PADDING = 80;
 var left, right, bottom, progressMeter, timeDisplay, time;
 var split = .35;
 
-
-var VIDEO_ID = '5';
-
 var player;
 
 
@@ -35,6 +32,7 @@ function init(){
   });
   
   var socket = io.connect('/');
+  socket.emit('change_video', {videoId: VIDEO_ID});
   socket.on('addedComment', function (data) {
     var q = $('#'+data.questionId);
     var item = q.data('item');

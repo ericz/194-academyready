@@ -10,6 +10,7 @@
   "dependencies": {
     "express": "~3.0.0rc5",
     "mongoskin": "~0.4.4",
-    "socket.io": "~0.9.11"
+    "socket.io": "~0.9.11",
+    "ejs": "~0.8.3"
   }
 }
