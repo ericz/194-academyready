@@ -79,14 +79,22 @@ h1 {
   background-color: #111;
 }
 
+.p-time {
+  color: #666;
+  font-weight: normal;
+}
 
 #progress {
-  height: 25px;
+  height: 35px;
   position: fixed;
   width: 100%;
   bottom: 160px;
+  line-height: 35px;
   background-color: #444;
-  border-top: 5px solid #222;
+  text-align: center;
+  border-top: 3px solid #222;
+  font-weight: bold;
+  color: #fff;
 }
 
 /*
@@ -230,5 +238,9 @@ h1 {
 #add-time-display {
   font-weight: bold;
   color: #fff;
+}
+
+#add {
+  font-size: 11px;
 }
 
