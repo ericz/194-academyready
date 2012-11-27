@@ -88,7 +88,9 @@ AcademyReadyPlayer.prototype.setItem = function() {
   var item = $(this).data('item');
   var head = $('<h1></h1>').text(item.title);
   var details = $('<div></div>').addClass('l-details');
-  var time = $('<span></span>').addClass('l-time').text(formatTime(item.time) + ' / ' + formatTime(yt.getDuration()) + ' ');
+  var time = $('<a></a>').prop('href', '#').addClass('l-time').text(formatTime(item.time) + ' / ' + formatTime(yt.getDuration()) + ' ').click(function(){
+    yt.seekTo(item.time);
+  });
   var author = $('<span></span>').addClass('l-created').text('Created by ' + item.userName + ' ');
   var date = $('<span></span>').addClass('l-created').text($.timeago(item.created));
   details.append([time, author, date]);
