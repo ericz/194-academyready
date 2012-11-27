@@ -88,9 +88,7 @@ AcademyReadyPlayer.prototype.setItem = function() {
   var item = $(this).data('item');
   var head = $('<h1></h1>').text(item.title);
   var details = $('<div></div>').addClass('l-details');
-  var time = $('<a></a>').prop('href', '#').addClass('l-time').text(formatTime(item.time) + ' / ' + formatTime(yt.getDuration()) + ' ').click(function(){
-    yt.seekTo(item.time);
-  });
+  var time = $('<span></span>').addClass('l-time').text(formatTime(item.time) + ' / ' + formatTime(yt.getDuration()) + ' ');
   var author = $('<span></span>').addClass('l-created').text('Created by ' + item.userName + ' ');
   var date = $('<span></span>').addClass('l-created').text($.timeago(item.created));
   details.append([time, author, date]);
@@ -115,7 +113,9 @@ AcademyReadyPlayer.prototype.setItem = function() {
     $(this).hide();
   });
   var submitwrap = $('<div></div>').prop('align', 'right').append(submit);
- 
+  var button = $('<span></span>').addClass('btn').text('Jump to ' + formatTime(item.time)).click(function(){
+    yt.seekTo(item.time);
+  });
   function setComments (){
     var commenthead = $('<div></div>').addClass('l-commenthead').text(item.comments.length + ' comments');
     comments.append(commenthead);
@@ -141,7 +141,7 @@ AcademyReadyPlayer.prototype.setItem = function() {
     });
   }
 
-  leftContent.append([head, details, body, comments, input, submitwrap]);
+  leftContent.append([head, details, body, comments, input, submitwrap, button]);
 };
 
 AcademyReadyPlayer.prototype.rebucket = function(count) {
