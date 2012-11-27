@@ -75,7 +75,8 @@ AcademyReadyPlayer.prototype.addItem = function(item) {
   this.items.push(item);
   var bucketSize = yt.getDuration() / this.buckets.length;
   var bucketIndex = Math.floor(item.time / bucketSize);
-  var q = $('<div></div>').addClass('b-panel-q').data('item', item).prop('id', item.id).text(item.title).click(this.setItem);
+  var darktime = $('<span></span>').addClass('darktime').text(formatTime(item.time));
+  var q = $('<div></div>').addClass('b-panel-q').data('item', item).prop('id', item.id).text(item.title).append(darktime).click(this.setItem);
   this.buckets[bucketIndex].append(q);
 };
 
@@ -87,9 +88,10 @@ AcademyReadyPlayer.prototype.setItem = function() {
   var item = $(this).data('item');
   var head = $('<h1></h1>').text(item.title);
   var details = $('<div></div>').addClass('l-details');
+  var time = $('<span></span>').addClass('l-time').text(formatTime(item.time) + ' / ' + formatTime(yt.getDuration()) + ' ');
   var author = $('<span></span>').addClass('l-created').text('Created by ' + item.userName + ' ');
   var date = $('<span></span>').addClass('l-created').text($.timeago(item.created));
-  details.append([author, date]);
+  details.append([time, author, date]);
   var body = $('<div></div>').addClass('l-body').text(item.body);
   
   var comments = $('<div></div>').addClass('l-comments-wrap');
@@ -153,7 +155,8 @@ AcademyReadyPlayer.prototype.rebucket = function(count) {
   for (var i = 0, ii = this.items.length; i < ii; i++) {
     var item = this.items[i];
     var bucketIndex = Math.floor(item.time / bucketSize);
-    var q = $('<div></div>').addClass('b-panel-q').data('item', item).text(item.title).click(this.setItem);
+    var darktime = $('<span></span>').addClass('darktime').text(formatTime(item.time));
+    var q = $('<div></div>').addClass('b-panel-q').data('item', item).text(item.title).append(darktime).click(this.setItem);
     this.buckets[bucketIndex].append(q);
   }
 };
@@ -166,7 +169,7 @@ AcademyReadyPlayer.prototype.refreshProgress = function(){
   var duration = yt.getDuration();
 
   var percentProgress = (currentTime / duration) * 100;
-  progressMeter.css('right', (99.5 - percentProgress) + '%');
+  //progressMeter.css('right', (99.5 - percentProgress) + '%');
   
   var bucketIndex = Math.floor(percentProgress * this.buckets.length / 100);
   $('.b-panel-selected').removeClass('b-panel-selected');
@@ -174,12 +177,16 @@ AcademyReadyPlayer.prototype.refreshProgress = function(){
     this.buckets[bucketIndex].addClass('b-panel-selected');
   }
   
+  timeDisplay.text(formatTime(currentTime));
+  time.val(currentTime);
+};
+
+function formatTime(currentTime) {
   var seconds = Math.floor(currentTime % 60);
   var minutes = Math.floor(currentTime / 60).toString();
   
-  timeDisplay.text(minutes + ':' + pad2(seconds));
-  time.val(currentTime);
-};
+  return minutes + ':' + pad2(seconds);
+}
 
 function pad2(number) {
   return (number < 10 ? '0' : '') + number

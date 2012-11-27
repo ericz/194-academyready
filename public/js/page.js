@@ -1,9 +1,9 @@
 var YTASPECT = 16/9;
-var BOTTOM_HEIGHT = 165;
+var BOTTOM_HEIGHT = 190;
 var PANEL_WIDTH = 200;
 var RIGHT_PANEL_PADDING = 80;
 
-var left, right, bottom, progressMeter, timeDisplay, time;
+var left, right, bottom, /*progressMeter,*/ timeDisplay, time;
 var split = .35;
 
 var player;
@@ -12,17 +12,23 @@ var player;
 
 
 function init(){
+  if (!(yt.getDuration() > 0)) {
+    setTimeout(init, 200);
+    return;
+  }
+  
   $(function(){
+  
+ 
     left = $('#left');
     right = $('#right');
     bottom = $('#bottom');
-    progressMeter = $('#progress-meter');
+    //progressMeter = $('#progress-meter');
     time = $('#add-time');
     timeDisplay = $('#add-time-display');
     player = new AcademyReadyPlayer();
     
     $(window).resize(player.resize.bind(player));
-    
     
     setInterval(player.refreshProgress.bind(player), 200);
     
@@ -74,7 +80,7 @@ function loadQuestions() {
         body: q.questionText,
         time: q.videoTime,
         created: q.date,
-        userName: 'Eric Z.'
+        userName: 'Anonymous'
       };
       player.addItem(item);
     }
@@ -90,7 +96,7 @@ function randomData(items) {
       body: randomString(200),
       time: Math.random() * duration,
       created: ((new Date()).getTime() - Math.round(Math.random() * 100000000)),
-      userName: 'Eric Z.'
+      userName: 'Anonymous'
     };
     player.addItem(item);
   }
