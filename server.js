@@ -96,7 +96,7 @@ app.get('/getQuestionsByVideoId/:videoId', function(req, res){
   
 	var query = {'videoId': videoId};
 	//console.log(query);
-	Questions.find(query).toArray(function(err, results){
+	Questions.find(query, {sort: {videoTime: 1} }).toArray(function(err, results){
 		if(err) throw err;
 		//console.log(results);
 		for(var i = 0; i < results.length; i = i + 1){
