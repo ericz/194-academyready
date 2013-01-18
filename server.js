@@ -1,11 +1,11 @@
 var express = require('express');
-
 var app = express();
 var mongo = require('mongoskin');
 var ObjectID = require('mongoskin').ObjectID;
 var db = mongo.db('localhost:27017/194?auto_reconnect', {safe: true});
 var Questions = db.collection('Questions');
 var Comments = db.collection('Comments');
+var Users = db.collection('Users');
 var http = require('http');
 var server = http.createServer(app);
 var sio = require('socket.io');
@@ -17,6 +17,9 @@ app.set('views', __dirname + '/views');
 
 app.use(express.static(__dirname + '/public'));
 app.use(express.bodyParser());
+app.use(express.cookieParser());
+
+app.use(express.session({ secret: 'tiger', maxAge : new Date(Date.now() + 2628000000)}));
 
 io.sockets.on('connection', function(socket){
 	//console.log('connected');
@@ -31,7 +34,43 @@ io.sockets.on('connection', function(socket){
 
 io.set('log level', 1);
 
-app.post('/addQuestion', function(req, res){
+
+var loggedIn = function(req, res, next) {
+  if(req.session.user) {
+    next();
+  } else {
+    res.send(401);
+  }
+};
+
+
+app.post('/register', function(req, res){
+  if (!req.body.user.match(/^[a-z0-9_-]+$/i) || req.body.pass.length < 2) {
+    res.send({error: "bad"});
+    return;
+  }
+  Users.insert({user: req.body.user, pass: req.body.pass}, function(err, doc){
+    if(err || !doc) {
+      res.send({error: "fail"});
+      return;
+    }
+    req.session.user = doc[0].user;
+    res.send({success: doc[0].user});
+  });
+});
+
+app.post('/login', function(req, res){
+  Users.findOne({user: req.body.user, pass: req.body.pass}, function(err, doc){
+    if(err || !doc) {
+      res.send({error: "no user found"});
+      return;
+    }
+    req.session.user = doc.user;
+    res.send({success: doc.user});
+  });
+});
+
+app.post('/addQuestion', loggedIn, function(req, res){
 	
   var questionTitle = req.body.questionTitle;
 	var questionText = req.body.questionText; //the actual text of the question
@@ -52,7 +91,7 @@ app.post('/addQuestion', function(req, res){
 	});
 });
 
-app.post('/addComment', function(req, res){
+app.post('/addComment', loggedIn, function(req, res){
 	
 	var questionId = req.body.questionId; //the related question
 	var commentText = req.body.commentText; //the actual text of the comment
@@ -72,7 +111,7 @@ app.post('/addComment', function(req, res){
 	});
 });
 
-
+/*
 app.get('/getQuestionById/:questionId', function(req, res){
 	var questionId = req.params.questionId;
 	Questions.findById(questionId, function(err, result){
@@ -89,9 +128,9 @@ app.get('/getCommentById/:commentId', function(req, res){
 		if(err) throw err;
 		res.send({'status': 'ok', 'data': result});
 	});
-});
+});*/
 
-app.get('/getQuestionsByVideoId/:videoId', function(req, res){
+app.get('/video/:videoId/questions', function(req, res){
 	var videoId = req.params.videoId;
   
 	var query = {'videoId': videoId};
@@ -107,7 +146,7 @@ app.get('/getQuestionsByVideoId/:videoId', function(req, res){
 	});
 });
 
-app.get('/getCommentsByQuestionId/:questionId', function(req, res){
+app.get('/question/:questionId/comments', function(req, res){
 	var questionId = req.params.questionId;
 	var query = {'questionId' : questionId};
 	Comments.find(query).toArray(function(err, results){
@@ -123,7 +162,7 @@ app.get('/getCommentsByQuestionId/:questionId', function(req, res){
 });
 
 app.get('/video/:id', function(req, res) {
-  res.render('video', {id: req.params.id});
+  res.render('video', {id: req.params.id, user: req.session.user});
 });
 
 var getDateFromObjectID = function(objectId){

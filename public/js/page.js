@@ -9,7 +9,11 @@ var split = .35;
 var player;
 
 
-
+function loggedIn(user) {
+  $('#re, #le').hide();
+  USER = user;
+  console.log(USER);
+}
 
 function init(){
   if (!(yt.getDuration() > 0)) {
@@ -34,6 +38,38 @@ function init(){
     
     // Load questions
     loadQuestions();
+    
+    $('#registerbtn').click(function(){
+      $.post('/register', {user: $('#u').val(), pass: $('#p').val()}, function(data){
+        if(data.error){
+          $('#re').text('The username and password combination is not valid or the username is already taken. Please use only letters, numbers, underscores and dashes in your username').show();
+        } else {
+          loggedIn(data.success);
+        }
+      });
+    });
+    
+    $('#u, #p').keypress(function(e){
+      if(e.keyCode == 13){
+        $('#registerbtn').click();
+      }
+    });
+
+    $('#loginbtn').click(function(){
+      $.post('/login', {user: $('#user').val(), pass: $('#pass').val()}, function(data){
+        if(data.error){
+          $('#le').text('No account found with given username and password').show();
+        } else {
+          loggedIn(data.success);
+        }
+      });
+    });
+    
+    $('#user, #pass').keypress(function(e){
+      if(e.keyCode == 13){
+        $('#loginbtn').click();
+      }
+    });
     
   });
   
@@ -69,7 +105,7 @@ function init(){
 // Testing
 
 function loadQuestions() {
-  $.getJSON('/getQuestionsByVideoId/' + VIDEO_ID, function(res){
+  $.getJSON('/video/' + VIDEO_ID + '/questions', function(res){
     var qs = res.data;
     for(var i = 0; i < qs.length; i++) {
       var q = qs[i];

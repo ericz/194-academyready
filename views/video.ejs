@@ -4,22 +4,44 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
   <meta http-equiv="Content-Language" content="en-us"> 
   <link href="/css/style.css" rel="stylesheet" type="text/css">
-  <script>
-    var VIDEO_ID = '<%=id%>';
-  </script>
+
   <script src="/socket.io/socket.io.js"></script>
   <script src="http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
   <script src="/js/jquery.timeago.js"></script>
+  <script>
+    var VIDEO_ID = '<%=id%>';
+    <% if(user) { %>var USER = '<%=user%>';<% } %>
+  </script>
   <script src="/js/yt.js"></script>
   <script src="/js/player.js"></script>
   <script src="/js/page.js"></script>
 </head>
 <body>
-  
+  <div id="modal">
+    <div id="login">
+      <div id="login-l">
+        <h2>Create an account</h2>
+        <p>An account is required to participate in discussions</p>
+        <div id="re"></div>
+        <input type="text" class="text-input" placeholder="Username / handle" id="u">
+        <input type="password" class="text-input" placeholder="Password" id="p">
+        <div align="right"><span id="registerbtn" class="btn">Register</span></div>
+      </div>
+      
+      <div id="login-r">
+        <h2>Login</h2>
+        <div id="le"></div>
+        <input type="text" class="text-input" placeholder="Username / handle" id="user">
+        <input type="password" class="text-input" placeholder="Password" id="pass">
+        
+        <div align="right"><span id="loginbtn" class="btn">Login</span></div>
+      </div>
+    </div>
+  </div>
   <div id="left">
     <div id="toolbar">
-      <span id="cancel" class="btn grey">Cancel Question</span>
+      <span id="cancel" class="btn grey">Cancel</span>
     </div>
     <div id="l-content">
       <div class="l-body">
@@ -44,11 +66,11 @@
         <p>Please seek the video to where you would like the question to be set</p>
         <br>
         <input type="hidden" value="time" id="add-time">
-        <input type="text" class="text-input" placeholder="Question title" id="add-title">
+        <input type="text" class="text-input" placeholder="Title" id="add-title">
         <br>
-        <textarea class="text-input" rows="10" placeholder="Your question" id="add-question"></textarea>
+        <textarea class="text-input" rows="10" placeholder="Description text (optional)" id="add-question"></textarea>
         <br>
-        <div align="right"><span id="add-submit" class="btn">Add Question at <span id="add-time-display"></span></span></div>
+        <div align="right"><span id="add-submit" class="btn">Add Discussion at <span id="add-time-display"></span></span></div>
       </div>
     </div>
   </div>
@@ -58,7 +80,7 @@
     </div>
   </div>
   <div id="progress">
-    Questions <span class="p-time">(in buckets by time) <span id="add" class="btn">New Question</span></span>
+    Discussions <span class="p-time">(in buckets by time) <span id="add" class="btn">Add Discussion</span></span>
   </div>
   <div id="bottom">
     

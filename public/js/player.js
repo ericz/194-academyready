@@ -81,6 +81,7 @@ AcademyReadyPlayer.prototype.addItem = function(item) {
 };
 
 AcademyReadyPlayer.prototype.setItem = function() {
+  $('#cancel').click();
   $('.b-panel-q-selected').removeClass('b-panel-q-selected');
   $(this).addClass('b-panel-q-selected');
   var leftContent = $('#l-content');
@@ -88,7 +89,9 @@ AcademyReadyPlayer.prototype.setItem = function() {
   var item = $(this).data('item');
   var head = $('<h1></h1>').text(item.title);
   var details = $('<div></div>').addClass('l-details');
-  var time = $('<span></span>').addClass('l-time').text(formatTime(item.time) + ' / ' + formatTime(yt.getDuration()) + ' ');
+  var time = $('<a></a>', {href: '#'}).addClass('l-time').text(formatTime(item.time) + ' / ' + formatTime(yt.getDuration()) + ' ').click(function(){
+    yt.seekTo(item.time);
+  });;
   var author = $('<span></span>').addClass('l-created').text('Created by ' + item.userName + ' ');
   var date = $('<span></span>').addClass('l-created').text($.timeago(item.created));
   details.append([time, author, date]);
@@ -113,9 +116,6 @@ AcademyReadyPlayer.prototype.setItem = function() {
     $(this).hide();
   });
   var submitwrap = $('<div></div>').prop('align', 'right').append(submit);
-  var button = $('<span></span>').addClass('btn').text('Jump to ' + formatTime(item.time)).click(function(){
-    yt.seekTo(item.time);
-  });
   function setComments (){
     var commenthead = $('<div></div>').addClass('l-commenthead').text(item.comments.length + ' comments');
     comments.append(commenthead);
@@ -128,7 +128,7 @@ AcademyReadyPlayer.prototype.setItem = function() {
   if (item.comments) {
     setComments();
   } else {
-    $.getJSON('/getCommentsByQuestionId/' + item.id, function(res) {
+    $.getJSON('/question/' + item.id + '/comments', function(res) {
       item.comments = [];
       for(var i = 0; i < res.data.length; i++) {
         var d = res.data[i];
@@ -141,7 +141,7 @@ AcademyReadyPlayer.prototype.setItem = function() {
     });
   }
 
-  leftContent.append([head, details, body, comments, input, submitwrap, button]);
+  leftContent.append([head, details, body, comments, input, submitwrap]);
 };
 
 AcademyReadyPlayer.prototype.rebucket = function(count) {
