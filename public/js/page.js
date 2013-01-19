@@ -2,6 +2,7 @@ var YTASPECT = 16/9;
 var BOTTOM_HEIGHT = 198;
 var PANEL_WIDTH = 200;
 var RIGHT_PANEL_PADDING = 80;
+var BAR_HEIGHT = 40;
 
 var left, right, bottom, /*progressMeter,*/ timeDisplay, time;
 var split = .35;
@@ -12,7 +13,20 @@ var player;
 function loggedIn(user) {
   $('#re, #le').hide();
   USER = user;
-  console.log(USER);
+  $('#login, #modal').hide();
+  $('#username').text(user);
+  $('#logoutlink').show();
+  $('#loginlink').hide();
+  $('#login input').val('');
+}
+
+function logout() {
+  USER = undefined;
+  $.getJSON('/logout');
+  $('#login, #modal').show();
+  $('#username').text('');
+  $('#logoutlink').hide();
+  $('#loginlink').show();
 }
 
 function init(){
@@ -23,6 +37,11 @@ function init(){
   
   $(function(){
   
+    if(!window.USER) {
+      $('#login, #modal').show();
+    } else {
+      loggedIn(USER);
+    }
  
     left = $('#left');
     right = $('#right');
@@ -38,6 +57,9 @@ function init(){
     
     // Load questions
     loadQuestions();
+    
+    
+    $('#loginlink, #logoutlink').click(logout);
     
     $('#registerbtn').click(function(){
       $.post('/register', {user: $('#u').val(), pass: $('#p').val()}, function(data){
@@ -80,7 +102,8 @@ function init(){
     var item = q.data('item');
     item.comments.push({body:data.commentText});
     if(q.hasClass('b-panel-q-selected')) {
-      var comment = $('<div></div>').addClass('l-comment').text(data.commentText);
+      var meta = $('<div></div>', {class: 'l-comment-meta'}).text(data.user);
+      var comment = $('<div></div>').addClass('l-comment').text(data.commentText).append(meta);
       $('.l-comments-wrap').append(comment);
     }
   });
@@ -91,11 +114,13 @@ function init(){
       body: data.questionText,
       time: data.videoTime,
       created: data.date,
-      userName: 'Anonymous'
+      userName: data.user || 'Anonymous'
     };
     player.addItem(item);
   });
-
+  socket.on('deletedQuestion', function(data){
+    player.removeItem(data);
+  });
   
 }
 
@@ -116,7 +141,7 @@ function loadQuestions() {
         body: q.questionText,
         time: q.videoTime,
         created: q.date,
-        userName: 'Anonymous'
+        userName: q.user || 'Anonymous'
       };
       player.addItem(item);
     }

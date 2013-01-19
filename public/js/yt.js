@@ -2,6 +2,7 @@ var yt;
 
 function onYouTubePlayerReady(playerId) {
   yt = document.getElementById(playerId);
+  
   init();
 }
 

@@ -37,7 +37,7 @@ AcademyReadyPlayer.prototype.resize = function() {
   var w = $(window).width();
   var l = w * split;
  
-  lrheight = h - BOTTOM_HEIGHT;
+  lrheight = h - BOTTOM_HEIGHT - BAR_HEIGHT;
   
   left.width(l);
   left.height(lrheight);
@@ -75,9 +75,24 @@ AcademyReadyPlayer.prototype.addItem = function(item) {
   this.items.push(item);
   var bucketSize = yt.getDuration() / this.buckets.length;
   var bucketIndex = Math.floor(item.time / bucketSize);
-  var darktime = $('<span></span>').addClass('darktime').text(formatTime(item.time));
+  var darktime = $('<span></span>').addClass('darktime').text(item.userName + ' ' + formatTime(item.time));
   var q = $('<div></div>').addClass('b-panel-q').data('item', item).prop('id', item.id).text(item.title).append(darktime).click(this.setItem);
-  this.buckets[bucketIndex].append(q);
+  var bucket = this.buckets[bucketIndex]; 
+  bucket.append(q);
+  bucket.children('.b-panel-label').remove();
+  var label = $('<div></div>', {class: 'b-panel-label'});
+  var timelabel = formatTime(bucketSize*bucketIndex) + '-' + formatTime(bucketSize*(bucketIndex+1));
+  label.text(timelabel);
+  label.prependTo(bucket);
+};
+AcademyReadyPlayer.prototype.removeItem = function(id) {
+  for(var i = 0; i < this.items.length; i++) {
+    var item = this.items[i];
+    if(item.id == id) {
+      this.items.splice(i,1);
+      $('#' + id).remove();
+    }
+  }
 };
 
 AcademyReadyPlayer.prototype.setItem = function() {
@@ -120,7 +135,8 @@ AcademyReadyPlayer.prototype.setItem = function() {
     var commenthead = $('<div></div>').addClass('l-commenthead').text(item.comments.length + ' comments');
     comments.append(commenthead);
     for (var i = 0; i < item.comments.length; i++) {
-      var comment = $('<div></div>').addClass('l-comment').text(item.comments[i].body);
+      var meta = $('<div></div>', {class: 'l-comment-meta'}).text(item.comments[i].userName);
+      var comment = $('<div></div>').addClass('l-comment').text(item.comments[i].body).append(meta);
       comments.append(comment);
     }
   }
@@ -128,20 +144,29 @@ AcademyReadyPlayer.prototype.setItem = function() {
   if (item.comments) {
     setComments();
   } else {
+    item.comments = [];
     $.getJSON('/question/' + item.id + '/comments', function(res) {
-      item.comments = [];
       for(var i = 0; i < res.data.length; i++) {
         var d = res.data[i];
         var comment = {
-          body: d.commentText
+          body: d.commentText,
+          userName: d.user
         };
         item.comments.push(comment);
       }
       setComments();
     });
   }
-
+  
   leftContent.append([head, details, body, comments, input, submitwrap]);
+  if(item.userName == USER) {
+    var del = $('<a></a>', {href: "#", class: 'l-del'}).text('Delete this discussion').click(function(){
+      $.post('/deleteQuestion', {id: item.id, videoId: VIDEO_ID}, function(){
+        $('#cancel').click();
+      });
+    });
+    details.before(del);
+  }
 };
 
 AcademyReadyPlayer.prototype.rebucket = function(count) {
@@ -157,10 +182,17 @@ AcademyReadyPlayer.prototype.rebucket = function(count) {
   for (var i = 0, ii = this.items.length; i < ii; i++) {
     var item = this.items[i];
     var bucketIndex = Math.floor(item.time / bucketSize);
-    var darktime = $('<span></span>').addClass('darktime').text(formatTime(item.time));
+    var darktime = $('<span></span>').addClass('darktime').text(item.userName + ' ' + formatTime(item.time));
     var q = $('<div></div>').addClass('b-panel-q').data('item', item).text(item.title).append(darktime).click(this.setItem);
     this.buckets[bucketIndex].append(q);
   }
+  $('.b-panel').each(function(bucketIndex){
+    var bucket = $(this);
+    var label = $('<div></div>', {class: 'b-panel-label'});
+    var timelabel = formatTime(bucketSize*bucketIndex) + '-' + formatTime(bucketSize*(bucketIndex+1));
+    label.text(timelabel);
+    label.prependTo(bucket);
+  });
 };
 
 

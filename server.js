@@ -43,6 +43,10 @@ var loggedIn = function(req, res, next) {
   }
 };
 
+app.get('/logout', function(req, res){
+  delete req.session.user;
+  res.send('ok');
+});
 
 app.post('/register', function(req, res){
   if (!req.body.user.match(/^[a-z0-9_-]+$/i) || req.body.pass.length < 2) {
@@ -70,6 +74,15 @@ app.post('/login', function(req, res){
   });
 });
 
+app.post('/deleteQuestion', loggedIn, function(req, res){
+  Questions.remove({_id: ObjectID.createFromHexString(req.body.id), videoId: req.body.videoId, user: req.session.user}, function(err, count){
+    if(!err && count == 1) {
+      io.sockets.in(req.body.videoId).emit('deletedQuestion', req.body.id);
+    }
+    res.send('ok');
+  });
+});
+
 app.post('/addQuestion', loggedIn, function(req, res){
 	
   var questionTitle = req.body.questionTitle;
@@ -79,7 +92,7 @@ app.post('/addQuestion', loggedIn, function(req, res){
 	var title = req.body.questionTitle;
 
 
-	var toInsert = {'videoId': videoId, 'questionTitle': title, 'questionText': questionText, 'videoTime':videoTime, 'upvotes': 0};
+	var toInsert = {'videoId': videoId, 'questionTitle': title, 'questionText': questionText, 'videoTime':videoTime, 'upvotes': 0, 'user': req.session.user};
 
 	Questions.insert(toInsert, function(err, data){
 		if (err) throw(err);
@@ -97,7 +110,7 @@ app.post('/addComment', loggedIn, function(req, res){
 	var commentText = req.body.commentText; //the actual text of the comment
 	//console.log(questionId)
 
-	var toInsert = {'questionId': questionId, 'commentText': commentText, 'children': [], 'upvotes': 0};
+	var toInsert = {'questionId': questionId, 'commentText': commentText, 'children': [], 'upvotes': 0, 'user': req.session.user};
 
 	Comments.insert(toInsert, function(err, data){
 		if(err) throw(err);
@@ -105,7 +118,6 @@ app.post('/addComment', loggedIn, function(req, res){
 		var commentId = commentResult['_id'];
 		commentResult['date'] = getDateFromObjectID(commentResult['_id']);
     commentResult['_id'] = commentResult['_id'].toString();
-    
     io.sockets.in(req.body.videoId).emit('addedComment', commentResult);
     res.send({'status': 'ok', 'commentId': commentId }); //return the id of the comment
 	});

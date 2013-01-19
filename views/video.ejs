@@ -1,6 +1,6 @@
 <html>
 <head>
-  <title>AcademyReady - Test Player</title> 
+  <title>Discuss - </title> 
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
   <meta http-equiv="Content-Language" content="en-us"> 
   <link href="/css/style.css" rel="stylesheet" type="text/css">
@@ -38,6 +38,13 @@
         <div align="right"><span id="loginbtn" class="btn">Login</span></div>
       </div>
     </div>
+  </div>
+  <div id="bar">
+    <div id="logo"><img src="/images/logo.png" align="center"></div>
+    <div id="logo-2">by AcademyReady</div>
+    <a href="#" id="loginlink" <% if(user) { %>style="display:none"<% } %> class="userlink">Login / Register</a></a>
+    <a href="#" id="logoutlink" <% if(!user) { %>style="display:none"<% } %> class="userlink">Logout (<span id="username"><% if(user) { %><%=user%><% } %></span>)</a>
+    
   </div>
   <div id="left">
     <div id="toolbar">
